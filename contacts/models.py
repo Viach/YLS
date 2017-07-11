@@ -14,21 +14,19 @@ class Contact:
     @staticmethod
     def get_contact_list():
         row = conn.execute("""
-    		select * from ADDRESSBOOK; 
+    		select * from CONTACT; 
     		""")
         return row
 
-    @staticmethod
-    def _get_last_pk():
-        cursor = conn.execute("""
-    		SELECT ID FROM ADDRESSBOOK ORDER BY id DESC LIMIT 1;
-    		""")
-        pk = [row for row in cursor][0][0]
-        return pk if pk else 1
 
     def add_contact(self):
-    	pk = self._get_last_pk() + 1
+    	cursor = conn.execute("""
+    		SELECT ID FROM CONTACT ORDER BY id DESC LIMIT 1;
+    		""")
+    	pk = [row for row in cursor][0][0]
+    	print(pk)
+    	pk += 1
     	conn.execute("""
-    		insert into ADDRESSBOOK values ({}, "Melksham{}{}", "{}", "{}");
+    		insert into CONTACT values ({}, "Melksham{}{}", "{}", "{}");
     		""".format(pk, pk, self.first_name, self.last_name, self.phone))
     	conn.commit()
