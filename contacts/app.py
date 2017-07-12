@@ -1,15 +1,28 @@
 #!/python
+"""
+        Application for storing and managing contacts
+
+"""
+
+from views import ContactView
 
 
-from models import Contact
+def main():
+    while True:
+        print('Commands: 1 - List; 2 - Search; 3- Add; 4 - Delete; 0 - Exit')
+        command = input(' ?')
+        if command == '1':
+            ContactView.display_contact_list()
+        elif command == '2':
+            ContactView.search_contact()
+        elif command == '3':
+            ContactView.add_contact()
+        elif command == '4':
+            ContactView.del_contact()
+        elif command in {'0', 'q'}:
+            break
 
 
-
-
-contact = Contact('sss', 'fff', 'fsdfsd')
-contact.add_contact()
-
-cursor = Contact.get_contact_list()
-
-for row in cursor:
-	print(row)
+if __name__ == '__main__':
+    print(__doc__)
+    main()

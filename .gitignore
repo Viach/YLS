@@ -1,3 +1,4 @@
 env-yls
 __pycache__
 *.db
+.idea
