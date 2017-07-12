@@ -2,10 +2,12 @@
 import sys
 from bowl import Soup
 
+
 def main(args):
     soup = Soup()
-    print(soup.url)
 
+    items_list = soup.get_item_list()
+    print(items_list[0], len(items_list))
 
 
 if __name__ == '__main__':
