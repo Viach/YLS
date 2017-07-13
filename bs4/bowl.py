@@ -6,11 +6,17 @@ from bs4 import BeautifulSoup
 class Soup:
     """ Class Soup - scrapper for site """
 
-    def __init__(self):
+    def __init__(self, args):
+        self.args = [param.split('=') for param in args]
+        self.args = {arg[0]: arg[-1].lower() for arg in self.args if arg[0] != arg[-1]}
         self.url = 'http://price.ua/catc839t14.html'
+        self.page = 1  # Number of current page.
+        self.item_list = []
 
-    def set_url(self, url):
-        self.url = url
+    def get_url(self, page):
+        if page > 1:
+            self.url = 'http://price.ua/catc839t14/page{}.html'.format(page)
+        return self.url
 
     def get_item_detail(self, item):
         price = item.find('div', {'class': 'price-wrap'})
@@ -18,6 +24,9 @@ class Soup:
         price = ''.join([i for i in price if i.isdigit()])
 
         name = item.find('a', {'class': {'model-name', }}).text
+        name_contains = self.args.get('--name-contains', False)
+        if name_contains and name_contains not in name.lower():
+            return None
 
         item_url = item.find('a', {'class': {'full-desc', }}).attrs['onmousedown'].partition('=')[-1]
         item_url = requests.get(item_url.strip('"')).content
@@ -30,9 +39,20 @@ class Soup:
         return name, price, description, item_url, item_photos
 
     def get_item_list(self):
-        r = requests.get(self.url)
+        r = requests.get(self.get_url(self.page))
         if r.status_code != 200:
             return 'Error'
         bs = BeautifulSoup(r.content, "html.parser")
         items = bs.find_all('div', {'class': {'product-item', 'view-list '}})
-        return [self.get_item_detail(item) for item in items]
+        max_page = int(bs.find('span', {'id': 'top-paginator-max'}).text)
+        for item in items:
+            item_detail = self.get_item_detail(item)
+            if item_detail:
+                self.item_list.append(item_detail)
+        print('Scanned {} page of {} pages (max pages for scan: {})'.format(self.page, max_page,
+                                                                            self.args['--max-pages']))
+        if self.page < max_page and self.page < int(self.args['--max-pages']):
+            self.page += 1
+            self.get_item_list()
+
+        return self.item_list
