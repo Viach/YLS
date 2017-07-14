@@ -34,10 +34,15 @@ class Soup:
         price = ''.join([i for i in price if i.isdigit()])
 
         name = item.find('a', {'class': {'model-name', }})
+        if not name:
+            name = item.find('div', {'class': {'photo-wrap', }}).find('a')
+            print(name)
+            name = name.get('title')
+            print(name)
         try:            
             item_url = name.get('href')
         except AttributeError as e:
-                print('\t Error Item URL for :',   '\n\t : ', e)
+                print('\t Error Item URL for :', ' page :', self.page)
                 print('It seems this item is from other host. Skipped!')
                 return None
         if not item_url:  # product from other host
