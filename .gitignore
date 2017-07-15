@@ -1,6 +1,7 @@
 env-yls
 __pycache__
 *.db
+*.sqlite
 .idea
 *.csv
 
