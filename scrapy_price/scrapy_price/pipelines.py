@@ -10,14 +10,16 @@ from scrapy_price import settings
 
 def save_data_to_csv(item):
     writer = csv.writer(open(settings.csv_file_path, 'a'), lineterminator='\n')
-    writer.writerow([item[key] for key in item.keys()])
+    writer.writerow([item[key] for key in ('name', 'price', 'description', 'item_url', 'item_photo')])
 
 
 class ScrapyPricePipeline(object):
-
     def __init__(self):
         pass
 
     def process_item(self, item, spider):
         save_data_to_csv(item)
         return item
+
+    def close_spider(self, spider):
+        pass
