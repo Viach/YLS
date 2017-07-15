@@ -13,7 +13,7 @@
 
 
     Example: python app.py --limit-pages=10 --price-range=10000:20000 
-                           --name-contains=Samsung --mode=list --start-page=5
+                           --name-contains=Lenovo --mode=list --start-page=5
 
 """
 import sys

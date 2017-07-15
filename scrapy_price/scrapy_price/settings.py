@@ -67,6 +67,7 @@ ITEM_PIPELINES = {
     'scrapy_price.pipelines.ScrapyPricePipeline': 300,
 }
 csv_file_path = 'data-price.csv'
+sql_file_path = 'data-price.sqlite'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
