@@ -26,13 +26,8 @@ def main(args):
         return
 
     soup = Soup(args)
-
-    item_list = soup.get_item_list()
-    if item_list:
-        print('Total items: ', len(item_list))
-        soup.store_data()
-        print("\n\t\tThat's it!")
-
+    soup.get_item_list()
+    print("\n\t\tThat's it!")
 
 if __name__ == '__main__':
     main(sys.argv[1:])

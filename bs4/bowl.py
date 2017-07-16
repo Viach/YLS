@@ -17,38 +17,22 @@ class Soup:
         self.url = 'http://price.ua/catc839t14.html' + self.args['--price-range']
         self.base_url = 'http://price.ua'
         self.page = int(self.args.get('--start-page', 1))  # Current page.
-        self.item_list = []  # List with result
         self.item_counter = 0
         self.page_counter = 0  # Total scanned pages
         self.output_file_name = 'scrape_data.csv'
 
-    def store_data(self):
+    def store_data(self, row):
         """    Write data to a CSV file    """
 
-        with open(self.output_file_name, "w") as csv_file:
+        with open(self.output_file_name, "a") as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
-
-            for line in self.item_list:
-                writer.writerow(line)
-            print('Data wrote in: ', self.output_file_name)
+            writer.writerow(row)
 
     def get_url(self, page):
         """ Return url for next scrape. """
         if page > 1:
             self.url = 'http://price.ua/catc839t14/page{}.html'.format(page) + self.args['--price-range']
         return self.url
-
-    def scrape_detail_js(self, item):
-        """ If item is in JavaScript code block:
-        scrape for item: name, description, item_url, item_photos from JS block code
-        """
-
-        block = item.find('div', {'class': {'photo-wrap', }}).find('a')  # for items from other hosts
-        item_url = self.base_url + block.get('onmousedown').replace('this.href=', '').replace('"', '')
-        name = block.get('title').replace('Купить ', '')
-        description = 'item from other host!'
-        item_photos = [block.find('img').get('src')]
-        return name, description, item_url, item_photos
 
     def get_item_detail(self, item):
         """ Return data for every item in scrape list """
@@ -85,25 +69,31 @@ class Soup:
         return name, price, description, item_url, item_photo
 
     def get_item_list(self):
-        """ Get start parameters and recursively scrape data """
+        """ Get start parameters and scrape data until:
+                                current page < max_page
+                                        AND
+                                scrapped_pages < limit_pages """
+        while True:
+            current_url = self.get_url(self.page)
+            r = requests.get(current_url)
+            print('URL to parse: ', current_url)
+            if r.status_code != 200:
+                print('Error :', r.status_code)
+                return
+            bs = BeautifulSoup(r.content, "html.parser")
+            items = bs.find_all('div', {'class': {'product-item', 'view-list'}})
+            max_page = int(bs.find('span', {'id': 'top-paginator-max'}).text)
+            for item in items:
+                item_detail = self.get_item_detail(item)
+                if item_detail:
+                    self.store_data(item_detail)
 
-        current_url = self.get_url(self.page)
-        r = requests.get(current_url)
-        print('URL to parse: ', current_url)
-        if r.status_code != 200:
-            print('Error :', r.status_code)
-            return
-        bs = BeautifulSoup(r.content, "html.parser")
-        items = bs.find_all('div', {'class': {'product-item', 'view-list'}})
-        max_page = int(bs.find('span', {'id': 'top-paginator-max'}).text)
-        for item in items:
-            item_detail = self.get_item_detail(item)
-            if item_detail:
-                self.item_list.append(item_detail)
-        print('Scanned {} page of {} pages (max pages for scan: {})'.format(self.page, max_page,
-                                                                            self.args['--limit-pages']))
-        if self.page < max_page and self.page_counter < int(self.args['--limit-pages']) - 1:
-            self.page += 1
-            self.get_item_list()
-            self.page_counter += 1
-        return self.item_list
+            print('Scanned {} page of {} pages (max pages for scan: {})'.format(self.page, max_page,
+                                                                                self.args['--limit-pages']))
+            if self.page < max_page and self.page_counter < int(self.args['--limit-pages']) - 1:
+                self.page += 1
+                self.page_counter += 1
+            else:
+                break
+
+        print('Data wrote in: {}\nTotal {} items.'.format(self.output_file_name, self.item_counter))
