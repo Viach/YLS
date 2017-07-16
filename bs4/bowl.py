@@ -62,9 +62,9 @@ class Soup:
         r_item = requests.get(item_url)  # Get item page
         item_full = BeautifulSoup(r_item.content, "html.parser")
         item_description_url = item_full.find('tr', {
-            'class': 'tr-details_compare-link'})  # Get table row with URL to descript
+            'class': 'tr-details_compare-link'})  # Get table row with URL to description
         item_description_url = item_description_url.find('td', {'class': 'td-name'}).find('a').get(
-            'href')  # Get URL to descript
+            'href')  # Get URL to description
         r_item_description = requests.get(item_description_url)
         item_description = BeautifulSoup(r_item_description.content, "html.parser")
         description = str(item_description.find('div', {'class': 'full-desc', }))
