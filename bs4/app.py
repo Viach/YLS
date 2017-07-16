@@ -6,18 +6,15 @@
                 --limit-pages=<number pages>                1
                 --price-range=<min-price>:<max-pice>        10000:20000
                 --name-contains=<string>
-                --mode=[list|full]                          list            in list mode description field is encoded,
-                                                                            full mode - is in hmtl format
-                --output-format=[csv|sql]                   csv
                 --help=[true|false]                         false
 
 
     Example: python app.py --limit-pages=10 --price-range=10000:20000 
-                           --name-contains=Lenovo --mode=list --start-page=5
+                           --name-contains=Lenovo --start-page=5
 
 """
 import sys
-from bowl import Soup, store_data
+from bowl import Soup
 
 
 def main(args):
@@ -31,10 +28,10 @@ def main(args):
     soup = Soup(args)
 
     item_list = soup.get_item_list()
-    print('Total items: ', len(item_list))
-
-    store_data(args, item_list)
-    print("\n\t\tThat's it!")
+    if item_list:
+        print('Total items: ', len(item_list))
+        soup.store_data()
+        print("\n\t\tThat's it!")
 
 
 if __name__ == '__main__':
