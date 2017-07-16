@@ -28,12 +28,13 @@
                                 <h6 class="text-center"><a
                                         href="{{ item.item_url }}">{{ item.item_url | truncate(35) }}</a></h6>
                             </td>
-                            <td>
+                            <td class="col-md-7">
                                 <div class="description">{{ item.description | cr2br | safe }}</div>
                             </td>
-                            <td>
+                            <td class="col-md-2">
                                 <a href="{{ item.item_photo }}" target="_blank">
-                                    <img class="thumbnail img-thumbnail" src="{{ item.item_photo }}">
+                                    <img class="thumbnail img-thumbnail" src="{{ item.item_photo }}"
+                                         alt="{{ item.item_photo }}">
                                 </a>
                             </td>
                         </tr>
@@ -42,22 +43,26 @@
                 <div class="row text-center">
                     {# If we have previous posts #}
                     {% if items.has_prev %}
-                        <a href="{{ url_for('index',  page=items.prev_num) }}">
-                            &laquo; Previous products
+                        <a class="badge btn btn-info" href="{{ url_for('index',  page=items.prev_num) }}">
+                            &laquo; Previous page
                         </a>
                     {% else %}
-                        &laquo; Previous products
+                        <div class="badge badge-secondary">
+                        &laquo; Previous page
+                        </div>
                     {% endif %}
+                </>
                     |
                     {% if items.has_next %}
-                        <a href="{{ url_for('index', page=items.next_num) }}">
-                            Next products &raquo;</a>
+                        <a class="badge btn btn-info" href="{{ url_for('index', page=items.next_num) }}">
+                            Next page &raquo;</a>
                     {% else %}
-                        Next products &raquo;
+                        <div class="badge badge-secondary">
+                        Next page &raquo;
+                        </div>
                     {% endif %}
                     Total pages: {{ items.pages }} have {{ items.total }} items.
                     <hr>
-
                 </div>
             </div>
         </div>

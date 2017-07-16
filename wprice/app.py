@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config.update(
     SQLALCHEMY_DATABASE_URI='sqlite:///data-price.sqlite',
-    DEBUG=True,
+    DEBUG=False,
     ITEMS_PER_PAGE=4,
 )
 
