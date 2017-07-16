@@ -26,7 +26,7 @@ def main(args):
         return
 
     soup = Soup(args)
-    soup.get_item_list()
+    soup.do_scraping()
     print("\n\t\tThat's it!")
 
 if __name__ == '__main__':

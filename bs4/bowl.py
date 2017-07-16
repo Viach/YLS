@@ -68,7 +68,7 @@ class Soup:
         print('\t', self.item_counter, ' : ', name, item_url, ' parsed')
         return name, price, description, item_url, item_photo
 
-    def get_item_list(self):
+    def do_scraping(self):
         """ Get start parameters and scrape data until:
                                 current page < max_page
                                         AND
@@ -81,7 +81,7 @@ class Soup:
                 print('Error :', r.status_code)
                 return
             bs = BeautifulSoup(r.content, "html.parser")
-            items = bs.find_all('div', {'class': {'product-item', 'view-list'}})
+            items = bs.find_all('div', {'class': {'product-item', 'view-list'}})  # create current page items list
             max_page = int(bs.find('span', {'id': 'top-paginator-max'}).text)
             for item in items:
                 item_detail = self.get_item_detail(item)
